@@ -21,7 +21,7 @@ web3 = Web3(Web3.HTTPProvider(RPC_URL, request_kwargs={'timeout': 5}))
 main_contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=CONTRACT_ABI)
 
 async def get_balance(db, phone):
-    users = db["Merchants"]
+    users = db["merchants"]
     from_user = await users.find_one({"phoneNo": phone})
     if not from_user:
         raise Exception("User not found")
