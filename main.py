@@ -9,6 +9,7 @@ from schemas import SignUpRequest, SignInRequest, CompareFaceRequest
 import face_recognition
 import face_recognition_models
 from io import BytesIO
+from services.web3_stuff import make_transaction
 
 from services.web3_stuff_router import router as web3_stuff_router
 
@@ -49,16 +50,19 @@ async def sign_up(request: SignUpRequest):
         merchant_id = await app.merchant_model.create_merchant(new_merchant)
 
         # Save the transaction (for simplicity, we'll assume a transaction exists)
-        transaction_data = {
-            "from": "boss",
-            "to": merchant_id,
-            "time": 1234567890,  # Example timestamp
-            "amount": 1000000,
-            "note": "nice deposit",
-            "transactionHash": "dummy_hash_for_now",
-            "status": "SUCCESS"
-        }
-        await app.transaction_model.create_transaction(transaction_data)
+        # transaction_data = {
+        #     "from": "boss",
+        #     "to": merchant_id,
+        #     "time": 1234567890,  # Example timestamp
+        #     "amount": 1000000,
+        #     "note": "nice deposit",
+        #     "transactionHash": "dummy_hash_for_now",
+        #     "status": "SUCCESS"
+        # }
+        # await app.transaction_model.create_transaction(transaction_data)
+
+        # make transaction between boss and this poor dude
+        await make_transaction(app.mongodb_db, "boss", request.phoneno, 10000, "nice deposit", request.password)
 
         return {"phoneNo": request.phoneno, "isMerchant": request.isMerchant, "statusCode": 201}
 

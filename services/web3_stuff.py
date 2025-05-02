@@ -40,7 +40,7 @@ async def get_previous_transactions(db, phone):
     return results
 
 async def make_transaction(db, from_phone, to_phone, amount, note, password):
-    users = db["Merchants"]
+    users = db["merchants"]
     from_user = await users.find_one({"phoneNo": from_phone})
     to_user = await users.find_one({"phoneNo": to_phone})
 
