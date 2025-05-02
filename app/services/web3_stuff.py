@@ -20,8 +20,37 @@ with open("smart-contract/main_contract_abi.json") as f:
 web3 = Web3(Web3.HTTPProvider(RPC_URL, request_kwargs={'timeout': 5}))
 main_contract = web3.eth.contract(address=CONTRACT_ADDRESS, abi=CONTRACT_ABI)
 
+async def register_user_on_chain(merchant_id: str):
+    try:
+        gas_price = web3.eth.gas_price
+        nonce = web3.eth.get_transaction_count(OWNER_ADDRESS)
+        
+        tx_data = main_contract.functions.registerUser(merchant_id).build_transaction({
+            'from': OWNER_ADDRESS,
+            'nonce': nonce,
+            'gas': 300000,
+            'gasPrice': gas_price,
+            'value': 1000000  # value in wei
+        })
+
+        signed_tx = web3.eth.account.sign_transaction(tx_data, OWNER_PRIVATE_KEY)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
+        receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
+        
+        return {
+            "transactionHash": receipt.transactionHash.hex(),
+            "status": "SUCCESS" if receipt.status == 1 else "FAILURE"
+        }
+
+    except Exception as e:
+        return {
+            "status": "ERROR",
+            "error": str(e)
+        }
+
+
 async def get_balance(db, phone):
-    users = db["Merchants"]
+    users = db["merchants"]
     from_user = await users.find_one({"phoneNo": phone})
     if not from_user:
         raise Exception("User not found")
@@ -40,7 +69,7 @@ async def get_previous_transactions(db, phone):
     return results
 
 async def make_transaction(db, from_phone, to_phone, amount, note, password):
-    users = db["Merchants"]
+    users = db["merchants"]
     from_user = await users.find_one({"phoneNo": from_phone})
     to_user = await users.find_one({"phoneNo": to_phone})
 

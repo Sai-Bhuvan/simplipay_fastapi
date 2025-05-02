@@ -48,7 +48,7 @@ async def sign_up(request: SignUpRequest):
         }
 
         merchant_id = await app.merchant_model.create_merchant(new_merchant)
-
+        print(merchant_id)
         # Save the transaction (for simplicity, we'll assume a transaction exists)
         # transaction_data = {
         #     "from": "boss",
@@ -65,7 +65,7 @@ async def sign_up(request: SignUpRequest):
         await register_user_on_chain(merchant_id)
         # await make_transaction(app.mongodb_db, "boss", request.phoneno, 10000, "nice deposit", request.password)
 
-        return {"phoneNo": request.phoneno, "isMerchant": request.isMerchant, "statusCode": 201}
+        return {"phoneNo": request.phoneno, "isMerchant": request.isMerchant, "statusCode": 201,"merchantId":merchant_id}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
