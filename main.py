@@ -9,7 +9,7 @@ from schemas import SignUpRequest, SignInRequest, CompareFaceRequest
 import face_recognition
 import face_recognition_models
 from io import BytesIO
-from services.web3_stuff import make_transaction
+from services.web3_stuff import make_transaction, register_user_on_chain
 
 from services.web3_stuff_router import router as web3_stuff_router
 
@@ -62,7 +62,8 @@ async def sign_up(request: SignUpRequest):
         # await app.transaction_model.create_transaction(transaction_data)
 
         # make transaction between boss and this poor dude
-        await make_transaction(app.mongodb_db, "boss", request.phoneno, 10000, "nice deposit", request.password)
+        await register_user_on_chain(merchant_id)
+        # await make_transaction(app.mongodb_db, "boss", request.phoneno, 10000, "nice deposit", request.password)
 
         return {"phoneNo": request.phoneno, "isMerchant": request.isMerchant, "statusCode": 201}
 
