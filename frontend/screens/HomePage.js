@@ -27,6 +27,7 @@ export default function HomePage({ onPageChange }) {
   const BottomTabBar1 = ({ navigation, state }) => (
     <BottomNavigation
       selectedIndex={state.index}
+      style={{marginBottom:50}}
       onSelect={index => navigation.navigate(state.routeNames[index])}>
       <BottomNavigationTab title='Home' />
       <BottomNavigationTab title='Transactions' />
@@ -46,6 +47,7 @@ export default function HomePage({ onPageChange }) {
   const BottomTabBar2 = ({ navigation, state }) => (
     <BottomNavigation
       selectedIndex={state.index}
+      style={{marginBottom:30}}
       onSelect={index => navigation.navigate(state.routeNames[index])}>
       <BottomNavigationTab title='Home' />
       <BottomNavigationTab title='Transactions' />
@@ -62,7 +64,7 @@ export default function HomePage({ onPageChange }) {
 
   return (
     <NavigationContainer>
-      {isMerchant ? <TabNavigator1 /> : <TabNavigator2 />}
+      {isMerchant ? <TabNavigator2 /> : <TabNavigator1 />}
 
     </NavigationContainer>
 
