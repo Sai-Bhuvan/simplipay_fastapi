@@ -4,14 +4,14 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import bcrypt
 import os
 import numpy as np
-from models import MerchantModel, TransactionModel
-from schemas import SignUpRequest, SignInRequest, CompareFaceRequest
+from .models import MerchantModel, TransactionModel
+from .schemas import SignUpRequest, SignInRequest, CompareFaceRequest
 import face_recognition
 from io import BytesIO
 from PIL import Image
 import base64
-from services.web3_stuff_router import router as web3_stuff_router
-
+from .services.web3_stuff_router import router as web3_stuff_router
+from .services.web3_stuff import register_user_on_chain
 # Initialize FastAPI app
 app = FastAPI()
 app.include_router(web3_stuff_router)
@@ -38,9 +38,9 @@ async def sign_up(request: SignUpRequest):
         new_merchant = {
             "name": request.name,
             "email": request.email,
-            "shopName": request.shop,
-            "shopDetails": request.shopdetails,
-            "phoneNo": request.phoneno,
+            "shopName": request.shopName,
+            "shopDetails": request.shopDetails,
+            "phoneNo": request.phoneNo,
             "password": hashed_password.decode('utf-8'),
             "image": request.image,
             "isMerchant": request.isMerchant
@@ -58,9 +58,10 @@ async def sign_up(request: SignUpRequest):
             "transactionHash": "dummy_hash_for_now",
             "status": "SUCCESS"
         }
-        await app.transaction_model.create_transaction(transaction_data)
-
-        return {"phoneNo": request.phoneno, "isMerchant": request.isMerchant, "statusCode": 201}
+        user = await register_user_on_chain(merchant_id)
+        print(merchant_id)
+        print(user)
+        return {"phoneNo": request.phoneNo, "isMerchant": request.isMerchant, "statusCode": 201}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

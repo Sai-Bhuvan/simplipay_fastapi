@@ -10,38 +10,45 @@ export default function SignIn({ onPageChange }) {
     const [Pin, setPin] = useState("");
     const [phoneNo, setPhoneNo] = useState();
 
-    // async function Login() {
+    async function Login() {
         // const mobNo = await AsyncStorage.getItem('phone');
         // console.log(mobNo)
-        // var result = await fetch("http://192.168.137.1:3000/sign-in", {
-        //     method: "POST",
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(
-        //         {
-        //             pin: Pin,
-        //             phone: phoneNo,
-        //         }
-        //     )
-        // });
-
-    //     if (result.status == 200) {
-    //         // Alert.alert(" password Ok", "you have entered the correct password. ", [
-    //         //     { text: "OK", onPress: () => console.log("alert done") },
-    //         // ]);
-    //         result = await result.json();
-    //         console.log(result);
-    //         await AsyncStorage.setItem('phone', phoneNo);
-    //         await AsyncStorage.setItem('isMerchant', String(result.isMerchant));
-    //         onPageChange('HomePage');
-    //     }
-    //     else {
-    //         Alert.alert("Wrong password", "you have entered the wrong password. Please try again. ", [
-    //             { text: "OK", onPress: () => console.log("alert done") },
-    //         ]);
-    //     }
-    // }
+        try {
+            console.log("Hi");
+        var result = await fetch("http://192.168.212.102:8000/sign-in", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    pin: Pin,
+                    phone: phoneNo,
+                }
+            )
+            
+        });
+        console.log("Hi2");
+        if (result.status == 200) {
+            Alert.alert(" password Ok", "you have entered the correct password. ", [
+                { text: "OK", onPress: () => console.log("alert done") },
+            ]);
+            result = await result.json();
+            console.log(result);
+            await AsyncStorage.setItem('phone', phoneNo);
+            await AsyncStorage.setItem('isMerchant', String(result.isMerchant));
+            onPageChange('HomePage');
+        }
+        else {
+            Alert.alert("Wrong password", "you have entered the wrong password. Please try again. ", [
+                { text: "OK", onPress: () => console.log("alert done") },
+            ]);
+        }
+        } catch (error) {
+            console.log(error);
+        }
+        
+    }
     return (
         <Layout style={global.screen}>
             <Text style={global.headerText}>Sign In</Text>
@@ -54,7 +61,6 @@ export default function SignIn({ onPageChange }) {
                     label={<Text style={global.inputLabel}>Phone no</Text>}
 
                     style={global.input}
-                    keyboardType="numeric"
 
                     value={phoneNo}
                     onChangeText={(text) => setPhoneNo(text)}
@@ -65,7 +71,6 @@ export default function SignIn({ onPageChange }) {
                     label={"PIN"}
                     maxLength={4}
                     style={global.input}
-                    keyboardType="numeric"
                     secureTextEntry={true}
                     value={Pin}
                     onChangeText={(text) => setPin(text)}

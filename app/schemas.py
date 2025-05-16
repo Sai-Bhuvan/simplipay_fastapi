@@ -4,9 +4,9 @@ from typing import Optional
 class SignUpRequest(BaseModel):
     name: str
     email: str
-    shop: str
-    shopdetails: Optional[str] = None
-    phoneno: str
+    shopName: str
+    shopDetails: Optional[str] = None
+    phoneNo: str
     password: str
     image: Optional[str] = None
     isMerchant: bool

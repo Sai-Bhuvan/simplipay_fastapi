@@ -3,8 +3,7 @@ import React, { useRef, useState } from "react";
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import global from "../global";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
-import { Camera, CameraType } from "expo-camera";
-// import * as FaceDetector from 'expo-face-detector';
+import { CameraView, CameraType,useCameraPermissions } from "expo-camera";
 // import Home from "./Home";
 
 export default function Signup({ onPageChange }) {
@@ -21,81 +20,77 @@ export default function Signup({ onPageChange }) {
   const [canTakePic, setCanTakePic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState(null);
-//   const cameraref = useRef(null);
+  const [facing, setFacing] = useState('front');
 
-//   const [permission, requestPermission] = Camera.useCameraPermissions();
+const cameraref = useRef(null);
+const [permission, requestPermission] = useCameraPermissions();
 
-//   if (!permission) {
-//     // Camera permissions are still loading
-//     return <View />;
-//   }
+if (!permission) return <View />;
+if (!permission.granted) {
+  return (
+    <View style={global.screen}>
+      <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+      <Button onPress={requestPermission}>Grant Permission</Button>
+    </View>
+  );
+}
 
-//   if (!permission.granted) {
-//     // Camera permissions are not granted yet
-//     return (
-//       <View style={global.screen}>
-//         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-//         <Button onPress={requestPermission} title="grant permission" />
-//       </View>
-//     );
-//     // requestPermission();
-//   }
 
 
 
   async function Submit() {
-    // if (
-    //   !name ||
-    //   !phoneno ||
-    //   !email ||
-    //   !password ||
-    //   !confirmpassword
-    // ) {
-    //   Alert.alert("OOPS", "sorry you have not entered ", [
-    //     { text: "OK", onPress: () => console.log("alert done") },
-    //   ]);
-    // }
-    // if (password !== confirmpassword) {
-    //   Alert.alert("OOPS", "sorry your passwords are not matching change it", [
-    //     { text: "OK", onPress: () => console.log("password alert done") },
-    //   ]);
-    // } else {
-    //   setIsLoading(true);
-    //   var res = await fetch("http://192.168.137.1:3000/sign-up", {
-    //     method: "POST",
-    //     headers: {
-    //       'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(
-    //       {
-    //         name: name,
-    //         email: email,
-    //         phoneno: phoneno,
-    //         password: password,
-    //         shop: shop,
-    //         shopdetails: shopdetails,
-    //         image: image,
-    //         isMerchant: isMerchant,
-    //       }
-    //     )
+    if (
+      !name ||
+      !phoneno ||
+      !email ||
+      !password ||
+      !confirmpassword
+    ) {
+      Alert.alert("OOPS", "sorry you have not entered ", [
+        { text: "OK", onPress: () => console.log("alert done") },
+      ]);
+    }
+    if (password !== confirmpassword) {
+      Alert.alert("OOPS", "sorry your passwords are not matching change it", [
+        { text: "OK", onPress: () => console.log("password alert done") },
+      ]);
+    } else {
+      setIsLoading(true);
+      var res = await fetch("http://127.0.0.1:8000/sign-up", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(
+          {
+            name: name,
+            email: email,
+            phoneno: phoneno,
+            password: password,
+            shop: shop,
+            shopdetails: shopdetails,
+            image: image,
+            isMerchant: isMerchant,
+          }
+        )
 
 
-    //   }
+      }
 
-    //   );
+      );
 
-    //   console.log(res);
-    //   await AsyncStorage.setItem('phone', phoneno);
-    //   if (res.status == 201) {
-    //     res = await res.json();
-    //     console.log(res);
-    //     await AsyncStorage.setItem('isMerchant', String(res.isMerchant));
-    //     onPageChange('HomePage')
-    //   }
-    //   else {
-    //     setIsLoading(false);
-    //   }
-    // }
+      console.log(res);
+      await AsyncStorage.setItem('phone', phoneno);
+      if (res.status == 201) {
+        res = await res.json();
+        console.log(res);
+        await AsyncStorage.setItem('isMerchant', String(res.isMerchant));
+        onPageChange('HomePage')
+      }
+      else {
+        setIsLoading(false);
+      }
+    }
   }
 
 //   function presshandler() {
@@ -110,50 +105,53 @@ export default function Signup({ onPageChange }) {
 //     setCanTakePic(faces.length == 1);
 //   };
 
-//   const takePicture = async () => {
-//     if (cameraref) {
-//       try {
-//         const imageBase64 = await cameraref.current.takePictureAsync({
-//           base64: true,
-//           quality: 1
-//         });
+const takePicture = async () => {
+  if (cameraref.current) {
+    try {
+      const photo = await cameraref.current.takePictureAsync({
+        base64: true,
+        quality: 1,
+      });
 
-//         setImage(imageBase64.base64);
+      // const faces = await FaceDetection.detectFromFile(photo.uri);
+      setImage(photo.base64);
+        setOpenCamera(false);
+      // if (faces.length === 1) {
+      //   setImage(photo.base64);
+      //   setOpenCamera(false);
+      //   Alert.alert("Face Detected", "Picture captured successfully!");
+      // } else {
+      //   Alert.alert("Face Detection", "Please ensure only one face is visible.");
+      // }
+    } catch (e) {
+      console.error(e);
+      Alert.alert("Error", "Failed to take picture.");
+      setOpenCamera(false);
+    }
 
-//         setOpenCamera(false);
+    
+  }
+};
 
-//       } catch (e) {
-//         setOpenCamera(false);
-
-//         console.log(e);
-//       }
-//     }
-//   }
 
 
   return (
     <Layout style={global.screen}>
       {openCamera ? (<View style={global.screen}>
-        <Camera
-          onFacesDetected={handleFacesDetected}
-          faceDetectorSettings={{
-            mode: FaceDetector.FaceDetectorMode.fast,
-            detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
-            runClassifications: FaceDetector.FaceDetectorClassifications.none,
-            minDetectionInterval: 100,
-            tracking: true
-          }}
-          ref={cameraref}
-          style={{ flex: 1 }}
-          type={CameraType.front}
-        >
-          <Button
-            style={[global.button, { flexDirection: 'row', margin: 60, alignSelf: 'flex-end' }]}
-            appearance='outline'
-            onPress={takePicture}
-            disabled={!canTakePic}
-          ><Text>Take Pic</Text></Button>
-        </Camera>
+        <CameraView
+  ref={cameraref}
+  style={{ flex: 1 }}
+  type={facing}
+>
+  <Button
+    style={[global.button, { flexDirection: 'row', margin: 60, alignSelf: 'flex-end' }]}
+    appearance='outline'
+    onPress={takePicture}
+  >
+    <Text>Take Pic</Text>
+  </Button>
+</CameraView>
+
       </View>) : (<Layout>
         <ScrollView>
           <Layout>
