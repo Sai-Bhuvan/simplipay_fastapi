@@ -4,11 +4,10 @@ import Signup from './screens/signup';
 import { ApplicationProvider } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import SignIn from './screens/signin';
-
-
+import { useState } from 'react';
 export default function App() {
 
-  const [currentPage, setCurrentPage] = useState("SignUp")
+  const [currentPage, setCurrentPage] = useState("SignIn")
 
   const handlechangePage = (newPage) => {
     setCurrentPage(newPage);
@@ -23,7 +22,7 @@ export default function App() {
   }
 
   return(
-    <ApplicationProvider icons={EvaIconsPack} {...eva} theme={eva.dark}>
+    <ApplicationProvider {...eva} theme={eva.dark}>
      
       <View style = {{flex: 1, }}>
         {renderPage()}

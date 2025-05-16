@@ -3,8 +3,7 @@ import React, { useRef, useState } from "react";
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 import global from "../global";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
-import { Camera, CameraType } from "expo-camera";
-import FaceDetection from 'react-native-ml-kit';
+import { CameraView, CameraType,useCameraPermissions } from "expo-camera";
 // import Home from "./Home";
 
 export default function Signup({ onPageChange }) {
@@ -24,7 +23,7 @@ export default function Signup({ onPageChange }) {
   const [facing, setFacing] = useState('front');
 
 const cameraref = useRef(null);
-const [permission, requestPermission] = Camera.useCameraPermissions();
+const [permission, requestPermission] = useCameraPermissions();
 
 if (!permission) return <View />;
 if (!permission.granted) {
@@ -114,20 +113,23 @@ const takePicture = async () => {
         quality: 1,
       });
 
-      const faces = await FaceDetection.detectFromFile(photo.uri);
-
-      if (faces.length === 1) {
-        setImage(photo.base64);
+      // const faces = await FaceDetection.detectFromFile(photo.uri);
+      setImage(photo.base64);
         setOpenCamera(false);
-        Alert.alert("Face Detected", "Picture captured successfully!");
-      } else {
-        Alert.alert("Face Detection", "Please ensure only one face is visible.");
-      }
+      // if (faces.length === 1) {
+      //   setImage(photo.base64);
+      //   setOpenCamera(false);
+      //   Alert.alert("Face Detected", "Picture captured successfully!");
+      // } else {
+      //   Alert.alert("Face Detection", "Please ensure only one face is visible.");
+      // }
     } catch (e) {
       console.error(e);
       Alert.alert("Error", "Failed to take picture.");
       setOpenCamera(false);
     }
+
+    
   }
 };
 
@@ -136,7 +138,7 @@ const takePicture = async () => {
   return (
     <Layout style={global.screen}>
       {openCamera ? (<View style={global.screen}>
-        <Camera
+        <CameraView
   ref={cameraref}
   style={{ flex: 1 }}
   type={facing}
@@ -148,7 +150,7 @@ const takePicture = async () => {
   >
     <Text>Take Pic</Text>
   </Button>
-</Camera>
+</CameraView>
 
       </View>) : (<Layout>
         <ScrollView>
