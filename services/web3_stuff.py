@@ -35,7 +35,7 @@ async def register_user_on_chain(merchant_id: str):
         })
 
         signed_tx = web3.eth.account.sign_transaction(tx_data, OWNER_PRIVATE_KEY)
-        tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+        tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
         receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
         
         return {
@@ -93,7 +93,7 @@ async def make_transaction(db, from_phone, to_phone, amount, note, password):
     })
 
     signed_tx = web3.eth.account.sign_transaction(tx_data, OWNER_PRIVATE_KEY)
-    tx_hash = web3.eth.send_raw_transaction(signed_tx.rawTransaction)
+    tx_hash = web3.eth.send_raw_transaction(signed_tx.raw_transaction)
     receipt = web3.eth.wait_for_transaction_receipt(tx_hash)
     status = "SUCCESS" if receipt.status == 1 else "FAILURE"
 
