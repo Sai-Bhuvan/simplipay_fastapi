@@ -16,5 +16,5 @@ class SignInRequest(BaseModel):
     phone: str
 
 class CompareFaceRequest(BaseModel):
-    from_: str
+    phone: str
     image: str

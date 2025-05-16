@@ -5,9 +5,10 @@ import { ApplicationProvider } from '@ui-kitten/components';
 import * as eva from '@eva-design/eva';
 import SignIn from './screens/signin';
 import { useState } from 'react';
+import HomePage from './screens/HomePage';
 export default function App() {
 
-  const [currentPage, setCurrentPage] = useState("SignIn")
+  const [currentPage, setCurrentPage] = useState("SignUp")
 
   const handlechangePage = (newPage) => {
     setCurrentPage(newPage);

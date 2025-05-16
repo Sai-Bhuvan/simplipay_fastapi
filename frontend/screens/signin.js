@@ -1,21 +1,22 @@
 
-// import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 // import axios from "axios";
 import global from "../global";
 // import { pid } from "process";
 import { useState } from "react";
 import { StyleSheet, TouchableOpacity, Alert } from "react-native";
 import { Input, Layout, Text } from "@ui-kitten/components";
+import { ScrollView } from "react-native-web";
 export default function SignIn({ onPageChange }) {
     const [Pin, setPin] = useState("");
     const [phoneNo, setPhoneNo] = useState();
 
     async function Login() {
-        // const mobNo = await AsyncStorage.getItem('phone');
-        // console.log(mobNo)
+        const mobNo = await AsyncStorage.getItem('phone');
+        console.log(mobNo)
         try {
             console.log("Hi");
-        var result = await fetch("http://192.168.212.102:8000/sign-in", {
+        var result = await fetch("http://localhost:8000/sign-in", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -50,6 +51,7 @@ export default function SignIn({ onPageChange }) {
         
     }
     return (
+        <ScrollView>
         <Layout style={global.screen}>
             <Text style={global.headerText}>Sign In</Text>
             <Layout style={global.container}>
@@ -88,6 +90,7 @@ export default function SignIn({ onPageChange }) {
             </Layout>
 
         </Layout>
+        </ScrollView>
 
     )
 }

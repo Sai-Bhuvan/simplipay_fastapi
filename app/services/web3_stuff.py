@@ -3,7 +3,7 @@ import bcrypt
 from web3 import Web3
 from bson import ObjectId
 from dotenv import load_dotenv
-
+from fastapi.encoders import jsonable_encoder
 load_dotenv()  # Load .env variables
 
 RPC_URL = os.getenv("RPC_URL", "https://polygon-rpc.com")
@@ -61,12 +61,17 @@ async def get_balance(db, phone):
     })
     return balance
 
+def serialize_transaction(txn):
+    txn["_id"] = str(txn["_id"])
+    return txn
+
 async def get_previous_transactions(db, phone):
     transactions = db["transactions"]
-    results = await transactions.find({
+    cursor = transactions.find({
         "$or": [{"to": phone}, {"from": phone}]
-    }).to_list(length=100)  # Limit to 100 for now
-    return results
+    })
+    results = await cursor.to_list(length=100)
+    return [serialize_transaction(txn) for txn in results]
 
 async def make_transaction(db, from_phone, to_phone, amount, note, password):
     users = db["merchants"]

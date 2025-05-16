@@ -10,8 +10,8 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import SignIn from './signin';
 import Signup from './signup';
 import Transactions from './Transaction';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import InitiateTransaction from './initiate-transaction';
 export default function HomePage({ onPageChange }) {
 
   const { Navigator, Screen } = createBottomTabNavigator();
@@ -40,7 +40,7 @@ export default function HomePage({ onPageChange }) {
     <Navigator tabBar={props => <BottomTabBar1 {...props} />}>
       <Screen name='Home' component={Home} />
       <Screen name='Transaction' component={Transactions} />
-      <Screen name='Payment' component={Signup} />
+      <Screen name='Payment' component={InitiateTransaction} />
     </Navigator>
   );
 
@@ -64,7 +64,7 @@ export default function HomePage({ onPageChange }) {
 
   return (
     <NavigationContainer>
-      {isMerchant ? <TabNavigator2 /> : <TabNavigator1 />}
+      {isMerchant ? <TabNavigator1 /> : <TabNavigator2 />}
 
     </NavigationContainer>
 

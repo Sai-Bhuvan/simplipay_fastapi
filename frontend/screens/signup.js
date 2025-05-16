@@ -1,6 +1,6 @@
 import { Layout, Input, Text, Button, Divider, CheckBox, Spinner } from "@ui-kitten/components";
 import React, { useRef, useState } from "react";
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import global from "../global";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { CameraView, CameraType,useCameraPermissions } from "expo-camera";
@@ -65,9 +65,9 @@ if (!permission.granted) {
           {
             name: name,
             email: email,
-            phoneno: phoneno,
+            phoneNo: phoneno,
             password: password,
-            shop: shop,
+            shopName: shop,
             shopdetails: shopdetails,
             image: image,
             isMerchant: isMerchant,
@@ -81,7 +81,7 @@ if (!permission.granted) {
 
       console.log(res);
       await AsyncStorage.setItem('phone', phoneno);
-      if (res.status == 201) {
+      if (res.status == 200) {
         res = await res.json();
         console.log(res);
         await AsyncStorage.setItem('isMerchant', String(res.isMerchant));
@@ -111,6 +111,7 @@ const takePicture = async () => {
       const photo = await cameraref.current.takePictureAsync({
         base64: true,
         quality: 1,
+        imageType:"jpg"
       });
 
       // const faces = await FaceDetection.detectFromFile(photo.uri);
@@ -142,6 +143,7 @@ const takePicture = async () => {
   ref={cameraref}
   style={{ flex: 1 }}
   type={facing}
+  
 >
   <Button
     style={[global.button, { flexDirection: 'row', margin: 60, alignSelf: 'flex-end' }]}

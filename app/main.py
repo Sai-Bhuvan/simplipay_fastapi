@@ -2,20 +2,28 @@ from fastapi import FastAPI, HTTPException, Depends ,Request,UploadFile,Form,Fil
 from pydantic import BaseModel
 from motor.motor_asyncio import AsyncIOMotorClient
 import bcrypt
-import os
+import io,re
 import numpy as np
 from .models import MerchantModel, TransactionModel
 from .schemas import SignUpRequest, SignInRequest, CompareFaceRequest
 import face_recognition
 from io import BytesIO
-from PIL import Image
+from PIL import Image,ImageFile
 import base64
 from .services.web3_stuff_router import router as web3_stuff_router
 from .services.web3_stuff import register_user_on_chain
+from fastapi.middleware.cors import CORSMiddleware
+
 # Initialize FastAPI app
 app = FastAPI()
 app.include_router(web3_stuff_router)
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # 👈 Allow all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # 👈 Allow all HTTP methods
+    allow_headers=["*"],  # 👈 Allow all headers
+)
 # MongoDB client initialization
 @app.on_event("startup")
 async def startup_db():
@@ -34,7 +42,7 @@ async def sign_up(request: SignUpRequest):
     try:
         bcrypt_salt = bcrypt.gensalt(10)
         hashed_password = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt_salt)
-
+        request.image = request.image.split(",")[1]
         new_merchant = {
             "name": request.name,
             "email": request.email,
@@ -72,7 +80,7 @@ async def sign_in(request: SignInRequest, req: Request):
         db = req.app.mongodb_db
         merchant_model = MerchantModel(db)
         
-        user = await merchant_model.find_by_phone(request.phone)
+        user = await merchant_model.get_merchant_by_phone(request.phone)
         if not user:
             raise HTTPException(status_code=404, detail="Merchant not found")
 
@@ -95,10 +103,18 @@ async def sign_in(request: SignInRequest, req: Request):
         raise HTTPException(status_code=400, detail=str(e))
     
 def base64_to_image(base64_str: str) -> np.ndarray:
+    # base64_temp = base64_str + '=' * (-len(base64_str)%4)
     image_data = base64.b64decode(base64_str)
+    ImageFile.LOAD_TRUNCATED_IMAGES = True
     image = Image.open(BytesIO(image_data))
     return np.array(image)
 
+def decode_base64(data, altchars=b'+/'):
+    data = re.sub(rb'[^a-zA-Z0-9%s]+' % altchars, b'', str(data))  # normalize
+    missing_padding = len(data) % 4
+    if missing_padding:
+        data += b'='* (4 - missing_padding)
+    return base64.b64decode(data,altchars)
 
 def image_file_to_np(file: UploadFile) -> np.ndarray:
     image_data = file.file.read()
@@ -107,26 +123,26 @@ def image_file_to_np(file: UploadFile) -> np.ndarray:
 
 @app.post("/compareFace/")
 async def compare_face_file(
-    from_: str = Form(...),
-    image: UploadFile = File(...),
-    req: Request = None
+    request: CompareFaceRequest, req: Request
 ):
     try:
         db = req.app.mongodb_db
         users = db["merchants"]
-        user = await users.find_one({"phoneNo": from_})
+        user = await users.find_one({"phoneNo": request.phone})
+        # print(user)
+        # print(request.image)
         if not user or "image" not in user:
             raise HTTPException(status_code=404, detail="User or image not found")
 
         # Convert uploaded image to numpy
-        img1_np = image_file_to_np(image)
+        img1_np = base64_to_image(request.image)
 
         # Convert stored base64 image to numpy
         img2_np = base64_to_image(user["image"])
 
         face1_enc = face_recognition.face_encodings(img1_np)
         face2_enc = face_recognition.face_encodings(img2_np)
-
+        
         if not face1_enc or not face2_enc:
             raise HTTPException(status_code=400, detail="Face not detected in one or both images")
 
@@ -138,3 +154,5 @@ async def compare_face_file(
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+

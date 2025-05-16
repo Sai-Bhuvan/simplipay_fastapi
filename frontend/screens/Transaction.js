@@ -1,6 +1,6 @@
 import { Text, Layout, List, Button, Divider, Card, Input, Icon } from '@ui-kitten/components';
 import React, { useEffect, useState } from 'react'
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import global from '../global';
 // import { ScrollView } from 'react-native-web';
 
@@ -21,46 +21,46 @@ export default function Transactions() {
 
 
     async function fetchTransactions() {
-        // const mobNo = await AsyncStorage.getItem('phone');
-        // var result = await fetch("http://192.168.137.1:3000/previousTransactions", {
-        //     method: "POST",
-        //     headers: {
-        //         'Content-Type': 'application/json'
-        //     },
-        //     body: JSON.stringify(
-        //         {
-        //             phone: mobNo,
-        //         }
-        //     )
-        // });
-        // result = await result.json();
+        const mobNo = await AsyncStorage.getItem('phone');
+        var result = await fetch("http://127.0.0.1:8000/previous-transactions", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(
+                {
+                    phone: mobNo,
+                }
+            )
+        });
+        result = await result.json();
 
-        // console.log(result);
+        console.log(result);
 
-        // setPhoneNo(await AsyncStorage.getItem('phone'));
-        // setTransactions(result.transactions);
-        // setSearchItems(result.transactions);
+        setPhoneNo(await AsyncStorage.getItem('phone'));
+        setTransactions(result.transactions);
+        setSearchItems(result.transactions);
     }
 
-    // useEffect(() => {
-    //     searchTransaction();
-    // }, [searchString]);
+    useEffect(() => {
+        searchTransaction();
+    }, [searchString]);
 
-    // function searchTransaction() {
+    function searchTransaction() {
 
-    //     if(searchString.length == 0) {
-    //         setSearchItems(transactions);
-    //         return;
-    //     }
+        if(searchString.length == 0) {
+            setSearchItems(transactions);
+            return;
+        }
 
-    //     var t = transactions.filter(x => JSON.stringify(x).includes(searchString));
+        var t = transactions.filter(x => JSON.stringify(x).includes(searchString));
 
-    //     setSearchItems(t);
-    // }
+        setSearchItems(t);
+    }
 
-    // const AmountRight = ({ amount, type, status }) => {
-    //     return (status == 'FAILURE' ? <Text status={'primary'}>Fail</Text> : type == 'credit' ? <Text status={'success'}>{amount}</Text> : <Text status={'danger'}>{amount}</Text>)
-    // }
+    const AmountRight = ({ amount, type, status }) => {
+        return (status == 'FAILURE' ? <Text status={'primary'}>Fail</Text> : type == 'credit' ? <Text status={'success'}>{amount}</Text> : <Text status={'danger'}>{amount}</Text>)
+    }
 
     const renderItem = ({ item, index }) => {
         // console.log(item.fro);
@@ -72,7 +72,6 @@ export default function Transactions() {
         //     description={new Date(item.time).toDateString()}
         // ><AmountRight amount={item.amount} type={phoneNo == item.from ? 'debit' : 'credit'} status={item.status}/></ListItem>
         return <Card
-        // footer={}
         >
             <Layout>
                 <Text>id: {item._id}</Text>

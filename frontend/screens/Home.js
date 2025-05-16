@@ -1,35 +1,35 @@
 import { Layout, Text } from '@ui-kitten/components'
 import React, { useEffect, useState } from 'react'
 import global from '../global'
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Home() {
 
   const [balance, setBalance] = useState('loading...');
-//   useEffect(() => {
-//     async function getBalance() {
-//       console.log('getting balance...');
-//       const phone = await AsyncStorage.getItem('phone');
-//       console.log(phone);
-//       var result = await fetch("http://192.168.137.1:3000/getBalance", {
-//         method: "POST",
-//         headers: {
-//           'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify({
-//           from: phone
-//         })
-//       })
+  useEffect(() => {
+    async function getBalance() {
+      console.log('getting balance...');
+      const phone = await AsyncStorage.getItem('phone');
+      console.log(phone);
+      var result = await fetch("http://127.0.0.1:8000/get-balance", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: phone
+        })
+      })
 
-//       // console.log(result);
-//       result = await result.json();
-//       console.log(result);
+      // console.log(result);
+      result = await result.json();
+      console.log(result);
 
-//       setBalance(result.balance)
-//     }
+      setBalance(result.balance)
+    }
 
-//     getBalance();
-//   }, []);
+    getBalance();
+  }, []);
   return (
 
 
