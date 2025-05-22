@@ -11,7 +11,7 @@ export default function Home() {
       console.log('getting balance...');
       const phone = await AsyncStorage.getItem('phone');
       console.log(phone);
-      var result = await fetch("http://127.0.0.1:8000/get-balance", {
+      var result = await fetch("http://192.168.212.102:8000/get-balance", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'
@@ -36,7 +36,7 @@ export default function Home() {
 
     <Layout style={global.screen}>
       <Text style={global.headerText}>Balance</Text>
-      <Text style={global.subHeaderText}>100000</Text>
+      <Text style={global.subHeaderText}>{balance}</Text>
     </Layout>
   )
 }

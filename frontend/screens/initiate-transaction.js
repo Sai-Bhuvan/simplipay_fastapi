@@ -52,7 +52,7 @@ export default function InitiateTransaction() {
 
                 console.log('verifying');
 
-                var result = await fetch('http://127.0.0.1:8000/compareFace/', {
+                var result = await fetch('http://192.168.212.102:8000/compareFace/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -75,7 +75,7 @@ export default function InitiateTransaction() {
                     setTransactionStatus('YES');
 
                     const ph = await AsyncStorage.getItem('phone');
-                    var receipt = await fetch('http://127.0.0.1:8000/transaction', {
+                    var receipt = await fetch('http://192.168.212.102:8000/transaction', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -193,7 +193,7 @@ export default function InitiateTransaction() {
                             >
                                 <Button
                                     style={[global.button, { position:'absolute',bottom:200 }]}
-                                    appearance='outline'
+                                    appearance='filled'
                                     onPress={takePicture}
                                 ><Text>Verify</Text></Button>
                             </CameraView>

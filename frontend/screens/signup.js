@@ -56,7 +56,7 @@ if (!permission.granted) {
       ]);
     } else {
       setIsLoading(true);
-      var res = await fetch("http://127.0.0.1:8000/sign-up", {
+      var res = await fetch("http://192.168.212.102:8000/sign-up", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'

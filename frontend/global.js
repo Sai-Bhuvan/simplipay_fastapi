@@ -17,6 +17,12 @@ export default StyleSheet.create({
     borderColor: '#238',
     borderWidth: 2,    
   },
+  logo: {
+    width: 50,
+    height: 50,
+    alignSelf:'center',
+    elevation: 5,               
+  },
 
 
   inputLabel: {
@@ -47,11 +53,23 @@ export default StyleSheet.create({
   },
 
   button: {
-    margin: 2,
-    width: 200,
-    alignSelf:'center',
-    padding: 20
+    backgroundColor: '#238',     
+    paddingVertical: 12,         
+    paddingHorizontal: 20,      
+    borderRadius: 8,             
+    alignItems: 'center',        
+    justifyContent: 'center',    
+    alignSelf: 'center',         
+    marginTop: 20,               
+    width: 100,
+    elevation: 3,                
+    shadowColor: '#000',         
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
+
+  
 
   headerText: {    
     textAlign: "center",

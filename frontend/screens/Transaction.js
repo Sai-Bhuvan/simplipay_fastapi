@@ -22,7 +22,7 @@ export default function Transactions() {
 
     async function fetchTransactions() {
         const mobNo = await AsyncStorage.getItem('phone');
-        var result = await fetch("http://127.0.0.1:8000/previous-transactions", {
+        var result = await fetch("http://192.168.212.102:8000/previous-transactions", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'

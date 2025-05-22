@@ -4,9 +4,9 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import global from "../global";
 // import { pid } from "process";
 import { useState } from "react";
-import { StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { Input, Layout, Text } from "@ui-kitten/components";
-import { ScrollView } from "react-native-web";
+import { StyleSheet, TouchableOpacity, Alert,Image } from "react-native";
+import { Button, Input, Layout, Text } from "@ui-kitten/components";
+import { ScrollView,KeyboardAvoidingView,Platform } from "react-native";
 export default function SignIn({ onPageChange }) {
     const [Pin, setPin] = useState("");
     const [phoneNo, setPhoneNo] = useState();
@@ -15,8 +15,7 @@ export default function SignIn({ onPageChange }) {
         const mobNo = await AsyncStorage.getItem('phone');
         console.log(mobNo)
         try {
-            console.log("Hi");
-        var result = await fetch("http://localhost:8000/sign-in", {
+        var result = await fetch("http://192.168.212.102:8000/sign-in", {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json'
@@ -29,11 +28,10 @@ export default function SignIn({ onPageChange }) {
             )
             
         });
-        console.log("Hi2");
         if (result.status == 200) {
-            Alert.alert(" password Ok", "you have entered the correct password. ", [
-                { text: "OK", onPress: () => console.log("alert done") },
-            ]);
+            // Alert.alert(" password Ok", "you have entered the correct password. ", [
+            //     { text: "OK", onPress: () => console.log("alert done") },
+            // ]);
             result = await result.json();
             console.log(result);
             await AsyncStorage.setItem('phone', phoneNo);
@@ -51,46 +49,55 @@ export default function SignIn({ onPageChange }) {
         
     }
     return (
-        <ScrollView>
         <Layout style={global.screen}>
-            <Text style={global.headerText}>Sign In</Text>
-            <Layout style={global.container}>
-                {/* <Text style={styles.text1}>Enter your 4 digit Pin</Text>
-                <Text style={styles.text2}>{mobNo}</Text> */}
+  <KeyboardAvoidingView
+    style={{ flex: 1 }}
+    keyboardVerticalOffset={600}
+  >
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <Layout style={global.screen}>
+      <Image
+      source={require('../assets/logos/Darklogotrans.png')}
+      style={{ width: 200, height: 200, marginTop: 0, marginBottom: 0, alignSelf: 'center' }}
+      resizeMode="contain"
+    />
+        <Text style={[global.headerText,{fontFamily:'ExtraBold',paddingTop: 0,    
+    marginTop: 0,}]}>Sign In</Text>
+        <Layout style={[global.container,{alignItems:'center',justifyContent: 'flex-start'}]}>
+          <Input
+            placeholder="Enter Phone number"
+            label={<Text style={[global.headerText,{fontFamily:'Main'}]}>Phone no</Text>}
+            style={global.input}
+            value={phoneNo}
+            onChangeText={(text) => setPhoneNo(text)}
+          />
 
-                <Input
-                    placeholder="Enter Phone number"
-                    label={<Text style={global.inputLabel}>Phone no</Text>}
+          <Input
+            placeholder="Enter PIN"
+            label="PIN"
+            textStyle={{fontFamily:'Main'}}
+            maxLength={4}
+            style={global.input}
+            secureTextEntry
+            value={Pin}
+            onChangeText={(text) => setPin(text)}
+          />
 
-                    style={global.input}
-
-                    value={phoneNo}
-                    onChangeText={(text) => setPhoneNo(text)}
-                />
-
-                <Input
-                    placeholder="Enter PIN"
-                    label={"PIN"}
-                    maxLength={4}
-                    style={global.input}
-                    secureTextEntry={true}
-                    value={Pin}
-                    onChangeText={(text) => setPin(text)}
-                />
-
-
-
-
-                <TouchableOpacity onPress={() => Login()} ><Text style={global.touchableComp}>Login</Text></TouchableOpacity>
-                <Layout>
-                    <TouchableOpacity onPress={() => { onPageChange('SignUp') }}>
-                        <Text style={global.touchableComp}>New user? Sign-up</Text>
-                    </TouchableOpacity>
-                </Layout>
-            </Layout>
-
+          <Button onPress={Login} style={[global.button,{marginBottom:10}]}>
+            <Text style={[global.touchableComp,{fontFamily:'Main'}]}>Login</Text>
+          </Button>
+        
+          <Layout>
+          <Text style={[{fontFamily:'Main',alignSelf:'center',textDecorationLine:'underline',marginBottom:5}]}>Not yet registered?</Text>
+            <Button onPress={() => onPageChange('SignUp')} style={[global.button,{width:120,marginBottom:30,marginTop:0}]}>
+              <Text style={[global.touchableComp,{fontFamily:'Main'}]}>Sign-up</Text>
+            </Button>
+          </Layout>
         </Layout>
-        </ScrollView>
+      </Layout>
+    </ScrollView>
+  </KeyboardAvoidingView>
+</Layout>
 
     )
 }
