@@ -10,7 +10,6 @@ import InitiateTransaction from './initiate-transaction';
 
 const { Navigator, Screen } = createBottomTabNavigator();
 
-// ✅ Define icon functions once, outside of component
 const icons = [
   (props) => <Icon {...props} name='home-outline' />,
   (props) => <Fontisto {...props} name="history" size={24} color="grey" />,
@@ -22,7 +21,7 @@ const BottomTabBar = ({ navigation, state, isMerchant }) => {
     ? ['Home', 'Transactions', 'Payment']
     : ['Home', 'Transactions'];
 
-  const availableIcons = isMerchant ? icons : icons.slice(0, 2); // ⬅️ index matching
+  const availableIcons = isMerchant ? icons : icons.slice(0, 2);
 
   return (
     <BottomNavigation

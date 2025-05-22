@@ -49,7 +49,8 @@ export default StyleSheet.create({
   subHeaderText: {
     flex: 1,
     textAlign: "center", 
-    fontSize: 30,   
+    fontSize: 30,
+    color: "#082f66"
   },
 
   button: {
@@ -77,6 +78,7 @@ export default StyleSheet.create({
     paddingTop: 40,    
     marginTop: 20,
     paddingBottom: 30,
+    color: "#082f66"
   }
 
 

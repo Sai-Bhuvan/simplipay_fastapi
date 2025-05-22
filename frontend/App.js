@@ -12,7 +12,7 @@ import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 export default function App() {
 
-  const [currentPage, setCurrentPage] = useState("SignIn")
+  const [currentPage, setCurrentPage] = useState("SignUp")
   const [fontsLoaded, setFontsLoaded] = useState(false);
   const loadFonts = async () => {
     await Font.loadAsync({
@@ -45,8 +45,8 @@ export default function App() {
 
   return(
     <>
-    <IconRegistry icons={EvaIconsPack} />
-    <ApplicationProvider {...eva} theme={eva.dark}>
+    <IconRegistry icons={[EvaIconsPack]} />
+    <ApplicationProvider {...eva} theme={eva.light}>
      
       <View style = {{flex: 1, }}>
         {renderPage()}

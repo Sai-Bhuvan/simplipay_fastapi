@@ -1,9 +1,17 @@
-import { Layout, Input, Text, Button, Divider, CheckBox, Spinner } from "@ui-kitten/components";
+import {
+  Layout,
+  Input,
+  Text,
+  Button,
+  Divider,
+  CheckBox,
+  Spinner,
+} from "@ui-kitten/components";
 import React, { useRef, useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import global from "../global";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
-import { CameraView, CameraType,useCameraPermissions } from "expo-camera";
+import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 // import Home from "./Home";
 
 export default function Signup({ onPageChange }) {
@@ -20,32 +28,25 @@ export default function Signup({ onPageChange }) {
   const [canTakePic, setCanTakePic] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [image, setImage] = useState(null);
-  const [facing, setFacing] = useState('front');
+  const [facing, setFacing] = useState("front");
 
-const cameraref = useRef(null);
-const [permission, requestPermission] = useCameraPermissions();
+  const cameraref = useRef(null);
+  const [permission, requestPermission] = useCameraPermissions();
 
-if (!permission) return <View />;
-if (!permission.granted) {
-  return (
-    <View style={global.screen}>
-      <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-      <Button onPress={requestPermission}>Grant Permission</Button>
-    </View>
-  );
-}
-
-
-
+  if (!permission) return <View />;
+  if (!permission.granted) {
+    return (
+      <View style={global.screen}>
+        <Text style={{ textAlign: "center" }}>
+          We need your permission to show the camera
+        </Text>
+        <Button onPress={requestPermission}>Grant Permission</Button>
+      </View>
+    );
+  }
 
   async function Submit() {
-    if (
-      !name ||
-      !phoneno ||
-      !email ||
-      !password ||
-      !confirmpassword
-    ) {
+    if (!name || !phoneno || !email || !password || !confirmpassword) {
       Alert.alert("OOPS", "sorry you have not entered ", [
         { text: "OK", onPress: () => console.log("alert done") },
       ]);
@@ -59,236 +60,275 @@ if (!permission.granted) {
       var res = await fetch("http://192.168.212.102:8000/sign-up", {
         method: "POST",
         headers: {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(
-          {
-            name: name,
-            email: email,
-            phoneNo: phoneno,
-            password: password,
-            shopName: shop,
-            shopdetails: shopdetails,
-            image: image,
-            isMerchant: isMerchant,
-          }
-        )
-
-
-      }
-
-      );
+        body: JSON.stringify({
+          name: name,
+          email: email,
+          phoneNo: phoneno,
+          password: password,
+          shopName: shop,
+          shopdetails: shopdetails,
+          image: image,
+          isMerchant: isMerchant,
+        }),
+      });
 
       console.log(res);
-      await AsyncStorage.setItem('phone', phoneno);
+      await AsyncStorage.setItem("phone", phoneno);
       if (res.status == 200) {
         res = await res.json();
         console.log(res);
-        await AsyncStorage.setItem('isMerchant', String(res.isMerchant));
-        onPageChange('HomePage')
-      }
-      else {
+        await AsyncStorage.setItem("isMerchant", String(res.isMerchant));
+        onPageChange("HomePage");
+      } else {
         setIsLoading(false);
       }
     }
   }
 
-//   function presshandler() {
-//     Keyboard.dismiss();
-//   }
+  //   function presshandler() {
+  //     Keyboard.dismiss();
+  //   }
 
-//   const handletouch = () => {
-//     Submit();
-//   };
+  //   const handletouch = () => {
+  //     Submit();
+  //   };
 
-//   const handleFacesDetected = ({ faces }) => {
-//     setCanTakePic(faces.length == 1);
-//   };
+  //   const handleFacesDetected = ({ faces }) => {
+  //     setCanTakePic(faces.length == 1);
+  //   };
 
-const takePicture = async () => {
-  if (cameraref.current) {
-    try {
-      const photo = await cameraref.current.takePictureAsync({
-        base64: true,
-        quality: 1,
-        imageType:"jpg"
-      });
+  const takePicture = async () => {
+    if (cameraref.current) {
+      try {
+        const photo = await cameraref.current.takePictureAsync({
+          base64: true,
+          quality: 1,
+          imageType: "jpg",
+        });
 
-      // const faces = await FaceDetection.detectFromFile(photo.uri);
-      setImage(photo.base64);
+        // const faces = await FaceDetection.detectFromFile(photo.uri);
+        setImage(photo.base64);
         setOpenCamera(false);
-      // if (faces.length === 1) {
-      //   setImage(photo.base64);
-      //   setOpenCamera(false);
-      //   Alert.alert("Face Detected", "Picture captured successfully!");
-      // } else {
-      //   Alert.alert("Face Detection", "Please ensure only one face is visible.");
-      // }
-    } catch (e) {
-      console.error(e);
-      Alert.alert("Error", "Failed to take picture.");
-      setOpenCamera(false);
+        // if (faces.length === 1) {
+        //   setImage(photo.base64);
+        //   setOpenCamera(false);
+        //   Alert.alert("Face Detected", "Picture captured successfully!");
+        // } else {
+        //   Alert.alert("Face Detection", "Please ensure only one face is visible.");
+        // }
+      } catch (e) {
+        console.error(e);
+        Alert.alert("Error", "Failed to take picture.");
+        setOpenCamera(false);
+      }
     }
-
-    
-  }
-};
-
-
+  };
 
   return (
     <Layout style={global.screen}>
-      {openCamera ? (<View style={global.screen}>
-        <CameraView
-  ref={cameraref}
-  style={{ flex: 1 }}
-  type={facing}
-  
->
-  <Button
-    style={[global.button, { flexDirection: 'row', margin: 60, alignSelf: 'flex-end' }]}
-    appearance='outline'
-    onPress={takePicture}
-  >
-    <Text>Take Pic</Text>
-  </Button>
-</CameraView>
-
-      </View>) : (<Layout>
-        <ScrollView>
-          <Layout>
-            <Text style={global.headerText}>SIMPLI PAY</Text>
-          </Layout>
-
-
-          <Layout style={global.container}>
-
-
-
+      {openCamera ? (
+        <View style={global.screen}>
+          <CameraView ref={cameraref} style={{ flex: 1 }} type={facing}>
+            <Button
+              style={[
+                global.button,
+                { flexDirection: "row", margin: 60, alignSelf: "flex-end" },
+              ]}
+              appearance="outline"
+              onPress={takePicture}
+            >
+              <Text>Take Pic</Text>
+            </Button>
+          </CameraView>
+        </View>
+      ) : (
+        <Layout>
+          <ScrollView>
             <Layout>
-              <Input
-                style={global.input}
-                label="Name"
-                placeholder='enter your name'
-                value={name}
-                onChangeText={(text) => setname(text)}
-                keyboardType='default' />
-              <Divider />
-            </Layout>
-
-
-            <Layout>
-              <Input
-                style={global.input}
-                label="Moblie No"
-                placeholder='enter your shop mobile number'
-                keyboardType='numeric'
-                value={phoneno}
-                onChangeText={(text) => setphoneno(text)} />
-              <Divider />
-            </Layout>
-
-
-            <Layout>
-              <Input
-                style={global.input}
-                label={"E-mail"}
-                placeholder='enter your email'
-                keyboardType='email-address'
-                value={email}
-                onChangeText={(text) => setemail(text)} />
-              <Divider />
-            </Layout>
-
-            <Layout>
-              <CheckBox
-                checked={isMerchant}
-                onChange={nextChecked => setisMerchant(nextChecked)}
-                style={{ padding: 20 }}
+              <Text
+                style={[
+                  global.headerText,
+                  {
+                    fontFamily: "ExtraBold",
+                    paddingTop: 0,
+                    marginTop: 80,
+                  },
+                ]}
               >
-                is Merchant
-              </CheckBox>
+                Sign In
+              </Text>
             </Layout>
-            {isMerchant &&
+
+            <Layout
+              style={[
+                { borderWidth: 0, margin: 0, padding: 0, marginHorizontal: 20 },
+              ]}
+            >
               <Layout>
-                <Layout>
-                  <Input
-                    style={global.input}
-                    label={"Shop Name"}
-                    placeholder='enter your shop name'
-                    keyboardType='default'
-                    value={shop}
-                    onChangeText={(text) => setshop(text)} />
-                  <Divider />
-                </Layout>
-
-
-                <Layout>
-                  <Input
-                    style={global.input}
-                    label={"Shop Descripton"}
-                    placeholder="enter briefly about "
-                    multiline
-                    editable
-                    value={shopdetails}
-                    onChangeText={(text) => setshopdetails(text)}
-                    keyboardType='default'
-                    numberOfLines={3}
-                    maxLength={40} />
-                  <Divider />
-                </Layout>
+                <Input
+                  style={[global.input]}
+                  label="Name"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChangeText={(text) => setname(text)}
+                  textStyle={{ fontFamily: "Main" }}
+                  keyboardType="default"
+                />
+                <Divider />
               </Layout>
 
-            }
+              <Layout>
+                <Input
+                  style={global.input}
+                  label="Moblie No"
+                  placeholder="Enter your shop mobile number"
+                  keyboardType="numeric"
+                  textStyle={{ fontFamily: "Main" }}
+                  value={phoneno}
+                  onChangeText={(text) => setphoneno(text)}
+                />
+                <Divider />
+              </Layout>
 
-            <Layout>
-              <Input
-                style={global.input}
-                label="Password"
-                keyboardType='number-pad'
-                value={password}
-                onChangeText={(text) => setpassword(text)}
-                placeholder='enter your password' />
-              <Divider />
-            </Layout>
+              <Layout>
+                <Input
+                  style={global.input}
+                  label={"E-mail"}
+                  placeholder="Enter your email"
+                  keyboardType="email-address"
+                  textStyle={{ fontFamily: "Main" }}
+                  value={email}
+                  onChangeText={(text) => setemail(text)}
+                />
+                <Divider />
+              </Layout>
 
-            <Layout>
-              <Input
-                style={global.input}
-                placeholder="confirm your password"
-                label={"Confirm Pin"}
-                keyboardType='number-pad'
-                value={confirmpassword}
-                onChangeText={(text) => setconfirmsetpassword(text)}
-                secureTextEntry={true} />
-              <Divider />
-            </Layout>
+              <Layout>
+                <CheckBox
+                  checked={isMerchant}
+                  onChange={(nextChecked) => setisMerchant(nextChecked)}
+                  style={{ padding: 20 }}
+                >
+                  Are you a Merchant?
+                </CheckBox>
+              </Layout>
+              {isMerchant && (
+                <Layout>
+                  <Layout>
+                    <Input
+                      style={global.input}
+                      label={"Shop Name"}
+                      placeholder="Enter your Shop Name"
+                      keyboardType="default"
+                      textStyle={{ fontFamily: "Main" }}
+                      value={shop}
+                      onChangeText={(text) => setshop(text)}
+                    />
+                    <Divider />
+                  </Layout>
 
-            <Button
-              style={global.button}
-              appearance='outline'
-              onPress={() => setOpenCamera(true)}
-            ><Text>Upload Picture</Text></Button>
-            {image != null && <Text style={{ alignSelf: "center" }}>Picture Taken!</Text>}
+                  <Layout>
+                    <Input
+                      style={global.input}
+                      label={"Shop Descripton"}
+                      placeholder="Describe your Shop"
+                      multiline
+                      editable
+                      textStyle={{ fontFamily: "Main" }}
+                      value={shopdetails}
+                      onChangeText={(text) => setshopdetails(text)}
+                      keyboardType="default"
+                      numberOfLines={3}
+                      maxLength={40}
+                    />
+                    <Divider />
+                  </Layout>
+                </Layout>
+              )}
 
-            <Layout style={{ alignItems: "center" }} >
-              {isLoading ? <Spinner /> : <Button
+              <Layout>
+                <Input
+                  style={global.input}
+                  label="Password"
+                  keyboardType="number-pad"
+                  textStyle={{ fontFamily: "Main" }}
+                  value={password}
+                  onChangeText={(text) => setpassword(text)}
+                  placeholder="Enter your password"
+                />
+                <Divider />
+              </Layout>
+
+              <Layout>
+                <Input
+                  style={global.input}
+                  placeholder="Confirm your Password"
+                  label={"Confirm Pin"}
+                  keyboardType="number-pad"
+                  value={confirmpassword}
+                  textStyle={{ fontFamily: "Main" }}
+                  onChangeText={(text) => setconfirmsetpassword(text)}
+                  secureTextEntry={true}
+                />
+                <Divider />
+              </Layout>
+
+              <Button
                 style={global.button}
-                appearance="outline"
-                onPress={() => Submit()}>
-                Sign Up
-              </Button>}
-              <Divider />
-            </Layout>
+                onPress={() => setOpenCamera(true)}
+              >
+                <Text style={global.touchableComp}>
+                    Upload Pic
+                  </Text>
+              </Button>
+              {image != null && (
+                <Text style={{ alignSelf: "center" }}>Picture Taken!</Text>
+              )}
 
-            <Layout>
-              <TouchableOpacity onPress={() => { onPageChange('SignIn') }}>
-                <Text style={global.touchableComp}>Already have an account Sign-In</Text>
-              </TouchableOpacity>
+              <Layout style={{ alignItems: "center" }}>
+                {isLoading ? (
+                  <Spinner />
+                ) : (
+                  <Button
+                    style={[global.button,{marginBottom:10}]}
+                    onPress={() => Submit()}
+                  >
+                    Sign Up
+                  </Button>
+                )}
+                <Divider />
+              </Layout>
+
+              <Layout>
+              <Text
+                  style={[
+                    {
+                      fontFamily: "Main",
+                      alignSelf: "center",
+                      textDecorationLine: "underline",
+                      marginBottom: 5,
+                    },
+                  ]}
+                >
+                  Already registered?
+                </Text>
+                <Button
+                style={[global.button, { marginBottom: 10,marginTop:0 }]}
+                  onPress={() => {
+                    onPageChange("SignIn");
+                  }}
+                >
+                  <Text style={global.touchableComp}>
+                    Login
+                  </Text>
+                </Button>
+              </Layout>
             </Layout>
-          </Layout>
-        </ScrollView>
-      </Layout>)}
+          </ScrollView>
+        </Layout>
+      )}
     </Layout>
   );
 }
