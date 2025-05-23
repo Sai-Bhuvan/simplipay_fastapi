@@ -9,7 +9,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
-
+import { Keyboard,BackHandler } from 'react-native';
 export default function InitiateTransaction() {
   const [mobNo, setMobNo] = useState("");
   const [pin, SetPin] = useState("");
@@ -22,11 +22,18 @@ export default function InitiateTransaction() {
   const cameraref = useRef(null);
   const [facing, setFacing] = useState("back");
   const [permission, requestPermission] = useCameraPermissions();
-
+  const RupeePrefix = () => (
+    <Text style={{ fontSize: 16, marginRight: 0,color:"#238",fontFamily:"Main" }}>₹</Text>
+  );
+  const NumPrefix = () => (
+    <Text style={{ fontSize: 14, marginRight: 0,color:"#238",fontFamily:"Main" }}>+91</Text>
+  );
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
+
+  
 
   if (!permission.granted) {
     // Camera permissions are not granted yet
@@ -146,33 +153,56 @@ export default function InitiateTransaction() {
         <Layout style={global.screen}>
           {!openCamera ? (
             <Layout>
+              <Text
+                style={[
+                  global.headerText,
+                  {
+                    fontFamily: "ExtraBold",
+                    paddingTop: 0,
+                    marginTop: 0,
+                    
+                  },
+                ]}
+              >
+                Receive Payment
+              </Text>
               <Input
                 style={global.input}
+                textStyle={{ fontFamily: "Main" }}
                 label="Mobile Number"
                 placeholder="Enter your Mobile Number"
                 value={mobNo}
                 onChangeText={(text) => setMobNo(text)}
                 keyboardType="numeric"
+                accessoryLeft={NumPrefix}
               />
               <Input
                 style={global.input}
+                textStyle={{ fontFamily: "Main" }}
                 label="Amount"
                 placeholder="Enter amount"
                 value={amt}
                 onChangeText={(text) => setAmt(text)}
                 keyboardType="numeric"
+                accessoryLeft={RupeePrefix}
               />
               <Input
                 style={global.input}
                 label="PIN"
                 placeholder="Enter your 4 digit PIN"
                 value={pin}
-                onChangeText={(text) => SetPin(text)}
+                secureTextEntry
+                onChangeText={
+                  (text) => {SetPin(text)
+                  if (text.length === 4) {
+                  Keyboard.dismiss()}
+                }}
                 keyboardType="numeric"
+                maxLength={4}
               />
               <Button
                 onPress={() => setOpenCamera(true)}
-                style={[global.button, { marginBottom: 10 }]}
+                style={[global.button,{ width: 120, marginBottom: 0, marginTop: 20 },]}
               >
                 <Text
                   style={[

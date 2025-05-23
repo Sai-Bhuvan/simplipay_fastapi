@@ -154,10 +154,11 @@ export default function Signup({ onPageChange }) {
                     fontFamily: "ExtraBold",
                     paddingTop: 0,
                     marginTop: 80,
+                    
                   },
                 ]}
               >
-                Sign In
+                Sign Up
               </Text>
             </Layout>
 
@@ -215,7 +216,7 @@ export default function Signup({ onPageChange }) {
                 </CheckBox>
               </Layout>
               {isMerchant && (
-                <Layout>
+                <Layout style={{borderBlockColor:'#238',borderWidth: 2,borderRadius:5}}>
                   <Layout>
                     <Input
                       style={global.input}
@@ -276,10 +277,10 @@ export default function Signup({ onPageChange }) {
               </Layout>
 
               <Button
-                style={global.button}
+                style={[global.button,{ width: 140, marginBottom: 0, marginTop: 20 },]}
                 onPress={() => setOpenCamera(true)}
               >
-                <Text style={global.touchableComp}>
+                <Text style={[global.touchableComp,{ fontFamily:"Main"},]}>
                     Upload Pic
                   </Text>
               </Button>
@@ -292,7 +293,7 @@ export default function Signup({ onPageChange }) {
                   <Spinner />
                 ) : (
                   <Button
-                    style={[global.button,{marginBottom:10}]}
+                    style={[global.button,{ width: 120, marginBottom: 0, marginTop: 20 },]}
                     onPress={() => Submit()}
                   >
                     Sign Up
@@ -309,6 +310,7 @@ export default function Signup({ onPageChange }) {
                       alignSelf: "center",
                       textDecorationLine: "underline",
                       marginBottom: 5,
+                      marginTop: 20,
                     },
                   ]}
                 >

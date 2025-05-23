@@ -18,3 +18,6 @@ class SignInRequest(BaseModel):
 class CompareFaceRequest(BaseModel):
     phone: str
     image: str
+
+class SearchUserRequest(BaseModel):
+    phoneNo: str

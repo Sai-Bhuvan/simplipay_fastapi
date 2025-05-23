@@ -4,6 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BottomNavigation, BottomNavigationTab, Icon } from '@ui-kitten/components';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Fontisto from '@expo/vector-icons/Fontisto';
+import { View } from 'react-native';
 import Home from './Home';
 import Transactions from './Transaction';
 import InitiateTransaction from './initiate-transaction';
@@ -23,22 +24,24 @@ const BottomTabBar = ({ navigation, state, isMerchant }) => {
 
   const availableIcons = isMerchant ? icons : icons.slice(0, 2);
 
+ 
   return (
-    <BottomNavigation
-      selectedIndex={state.index}
-      appearance="noIndicator"
-      onSelect={index => navigation.navigate(state.routeNames[index])}
-      style={{
-        marginBottom: 20,
-        borderTopWidth: 1,
-        borderColor: '#eee',
-        backgroundColor: '#f8f8f8',
-      }}
-    >
-      {titles.map((title, index) => (
-        <BottomNavigationTab key={index} title={title} icon={availableIcons[index]} />
-      ))}
-    </BottomNavigation>
+    <View style={{ marginBottom: 40 }}>
+      <BottomNavigation
+        selectedIndex={state.index}
+        appearance="noIndicator"
+        onSelect={index => navigation.navigate(state.routeNames[index])}
+        style={{
+          borderTopWidth: 1,
+          borderColor: '#eee',
+          backgroundColor: '#f8f8f8',
+        }}
+      >
+        {titles.map((title, index) => (
+          <BottomNavigationTab key={index} title={title} icon={availableIcons[index]} />
+        ))}
+      </BottomNavigation>
+    </View>
   );
 };
 

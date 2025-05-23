@@ -20,8 +20,6 @@ export default function Home() {
           from: phone
         })
       })
-
-      // console.log(result);
       result = await result.json();
       console.log(result);
 

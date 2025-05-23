@@ -5,7 +5,7 @@ import bcrypt
 import io,re
 import numpy as np
 from .models import MerchantModel, TransactionModel
-from .schemas import SignUpRequest, SignInRequest, CompareFaceRequest
+from .schemas import SearchUserRequest, SignUpRequest, SignInRequest, CompareFaceRequest
 import face_recognition
 from io import BytesIO
 from PIL import Image,ImageFile
@@ -120,6 +120,43 @@ def image_file_to_np(file: UploadFile) -> np.ndarray:
     image_data = file.file.read()
     image = Image.open(BytesIO(image_data))
     return np.array(image)
+@app.post("/search-user")
+async def search_user(request: SearchUserRequest, req: Request):
+    try:
+        db = req.app.mongodb_db
+        users_collection = db["merchants"]
+
+        user = await users_collection.find_one({"phoneNo": request.phoneNo})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        if user.get("isMerchant"):
+            # Response for merchant
+            return {
+                "statusCode": 200,
+                "type": "merchant",
+                "data": {
+                    "name": user.get("name"),
+                    "email": user.get("email"),
+                    "shopName": user.get("shopName"),
+                    "shopDetails": user.get("shopDetails"),
+                    "phoneNo": user.get("phoneNo")
+                }
+            }
+        else:
+            # Response for regular user
+            return {
+                "statusCode": 200,
+                "type": "user",
+                "data": {
+                    "name": user.get("name"),
+                    "phoneNo": user.get("phoneNo")
+                    # add more fields relevant to users if needed
+                }
+            }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/compareFace/")
 async def compare_face_file(
