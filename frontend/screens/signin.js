@@ -14,7 +14,7 @@ export default function SignIn({ onPageChange }) {
     const mobNo = await AsyncStorage.getItem("phone");
     console.log(mobNo);
     try {
-      var result = await fetch("http://192.168.212.102:8000/sign-in", {
+      var result = await fetch("http://192.168.56.102:8000/sign-in", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

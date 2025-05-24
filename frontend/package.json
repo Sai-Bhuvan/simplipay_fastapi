@@ -28,11 +28,14 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.2",
+    "react-native-fast-image": "^8.6.3",
     "react-native-ml-kit": "^0.0.1",
     "react-native-safe-area-context": "^5.4.0",
     "react-native-svg": "15.11.2",
     "react-native-web": "^0.20.0",
-    "react-time-ago": "^7.3.3"
+    "react-time-ago": "^7.3.3",
+    "expo-av": "~15.1.4",
+    "expo-video": "~2.1.9"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

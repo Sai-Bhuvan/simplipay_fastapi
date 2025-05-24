@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import global from "../global";
 import { Alert, ScrollView, TouchableOpacity, View } from "react-native";
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
+import { Ionicons } from "@expo/vector-icons";
 // import Home from "./Home";
 
 export default function Signup({ onPageChange }) {
@@ -57,7 +58,7 @@ export default function Signup({ onPageChange }) {
       ]);
     } else {
       setIsLoading(true);
-      var res = await fetch("http://192.168.212.102:8000/sign-up", {
+      var res = await fetch("http://192.168.56.102:8000/sign-up", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -68,7 +69,7 @@ export default function Signup({ onPageChange }) {
           phoneNo: phoneno,
           password: password,
           shopName: shop,
-          shopdetails: shopdetails,
+          shopDetails: shopdetails,
           image: image,
           isMerchant: isMerchant,
         }),
@@ -130,18 +131,75 @@ export default function Signup({ onPageChange }) {
     <Layout style={global.screen}>
       {openCamera ? (
         <View style={global.screen}>
-          <CameraView ref={cameraref} style={{ flex: 1 }} type={facing}>
+          <CameraView ref={cameraref} style={{ flex: 1 }} facing={'front'}>
             <Button
-              style={[
-                global.button,
-                { flexDirection: "row", margin: 60, alignSelf: "flex-end" },
-              ]}
-              appearance="outline"
-              onPress={takePicture}
-            >
-              <Text>Take Pic</Text>
-            </Button>
-          </CameraView>
+                  onPress={() => setFacing(facing === "back" ? "front" : "back")}
+                  style={{
+                    position: "absolute",
+                    top: 50,
+                    right: 30,
+                    width: 60,
+                    height: 60,
+                    borderRadius: 30,
+                    backgroundColor: "#238",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    elevation: 5,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                  }}
+                  accessoryLeft={() => (
+                    <Ionicons name="camera-reverse-sharp" size={30} color="#fff" />
+                  )}
+                />
+
+
+                <Button
+                  onPress={takePicture}
+                  style={{
+                    position: "absolute",
+                    bottom: 50,
+                    alignSelf: "center",
+                    width: 70,
+                    height: 70,
+                    borderRadius: 35,
+                    backgroundColor: "#fff",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    elevation: 5,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                  }}
+                  accessoryLeft={() => (
+                    <Ionicons name="camera" size={40} color="#082f66" />
+                  )}
+                />
+
+
+                {/* <Button
+                  style={[global.button, { position: "absolute", bottom: 200 }]}
+                  appearance="filled"
+                  onPress={takePicture}
+                >
+                  <Text>Verify</Text>
+                </Button>
+
+                <Button
+                  style={[global.button, { position: "absolute", bottom: 130 }]}
+                  appearance="outline"
+                  onPress={() =>
+                    setFacing(facing === "back" ? "front" : "back")
+                  }
+                >
+                  <Text>
+                    {facing === "back" ? "Switch to Front" : "Switch to Back"}
+                  </Text>
+                </Button> */}
+              </CameraView>
         </View>
       ) : (
         <Layout>

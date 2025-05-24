@@ -11,7 +11,7 @@ export default function Home() {
       console.log('getting balance...');
       const phone = await AsyncStorage.getItem('phone');
       console.log(phone);
-      var result = await fetch("http://192.168.212.102:8000/get-balance", {
+      var result = await fetch("http://192.168.56.102:8000/get-balance", {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'

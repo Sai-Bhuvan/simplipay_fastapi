@@ -9,11 +9,7 @@ import { useState } from 'react';
 import HomePage from './screens/HomePage';
 import AppLoading from 'expo-app-loading';
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
-import TimeAgo from 'react-time-ago';
-import en from 'javascript-time-ago/locale/en.json';
-import { default as TimeAgoLib } from 'javascript-time-ago';
 
-TimeAgoLib.addDefaultLocale(en);
 export default function App() {
 
   const [currentPage, setCurrentPage] = useState("SignIn")

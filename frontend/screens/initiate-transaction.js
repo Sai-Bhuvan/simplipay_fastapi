@@ -1,4 +1,4 @@
-import { Layout, Input, Text, Button, Spinner } from "@ui-kitten/components";
+import { Layout, Input, Text, Button, Spinner,Modal } from "@ui-kitten/components";
 import { useState, useRef } from "react";
 import global from "../global";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -20,7 +20,8 @@ export default function InitiateTransaction() {
   const [canTakePic, setCanTakePic] = useState(false);
   const [verified, setVerified] = useState(false);
   const cameraref = useRef(null);
-  const [facing, setFacing] = useState("back");
+  const [facing, setFacing] = useState("front");
+  const [isVerifying, setIsVerifying] = useState(false);
   const [permission, requestPermission] = useCameraPermissions();
   const RupeePrefix = () => (
     <Text style={{ fontSize: 16, marginRight: 0,color:"#238",fontFamily:"Main" }}>₹</Text>
@@ -54,6 +55,7 @@ export default function InitiateTransaction() {
 
   const takePicture = async () => {
     if (cameraref) {
+      setIsVerifying(true);
       try {
         const imageBase64 = await cameraref.current.takePictureAsync({
           base64: true,
@@ -63,29 +65,31 @@ export default function InitiateTransaction() {
 
         console.log("verifying");
 
-        var result = await fetch("http://192.168.212.102:8000/compareFace/", {
+        var result = await fetch("http://192.168.56.102:8000/compareFace/", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             phone: mobNo,
-            image: imageBase64.base64.split(",")[1],
+            image: imageBase64.base64,
           }),
         });
 
-        console.log(await result.json());
-
+       const resJson = await result.json();
+       console.log(resJson);
         // If face match take to transaction processing page
-        if (result.status == 200) {
+
+        if (resJson.statusCode === 200) {
           setVerified(true);
           setOpenCamera(false);
+          setIsVerifying(false);
 
           // Take to transaction processing page
           setTransactionStatus("YES");
 
           const ph = await AsyncStorage.getItem("phone");
-          var receipt = await fetch("http://192.168.212.102:8000/transaction", {
+          var receipt = await fetch("http://192.168.56.102:8000/transaction", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -99,13 +103,15 @@ export default function InitiateTransaction() {
             }),
           });
 
-          if (receipt.status == 200) {
-            receipt = await receipt.json();
-            console.log(receipt);
-            setTransactionStatus(receipt.status);
+          const receiptJson = await receipt.json()
+
+          setTransactionStatus(receiptJson.status);
+          if (receiptJson.statusCode == 200) {
+            // receipt = await receipt.json();
+            console.log(receiptJson);
           } else {
-            receipt = await receipt.json();
-            Alert.alert("OOPS", receipt.message, [
+            // receipt = await receipt.json();
+            Alert.alert("OOPS", receiptJson.message, [
               { text: "OK", onPress: () => console.log("alert done") },
             ]);
 
@@ -125,6 +131,7 @@ export default function InitiateTransaction() {
           setOpenCamera(false);
           setTransactionStatus("NO");
           setVerified(false);
+          setIsVerifying(false)
         }
 
         // Send this image to backend to match
@@ -142,6 +149,7 @@ export default function InitiateTransaction() {
     setOpenCamera(false);
     setTransactionStatus("NO");
     setVerified(false);
+    setIsVerifying(false);
     setMobNo(null);
     SetPin(null);
     setAmt(null);
@@ -149,6 +157,24 @@ export default function InitiateTransaction() {
 
   return (
     <Layout style={global.screen}>
+      <Modal
+  visible={isVerifying}
+  backdropStyle={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+>
+  <Layout
+    style={{
+      padding: 20,
+      borderRadius: 10,
+      alignItems: "center",
+      justifyContent: "center",
+    }}
+  >
+    <Spinner size="giant" />
+    <Text category="s1" style={{ marginTop: 10 }}>
+      Verifying...
+    </Text>
+  </Layout>
+</Modal>
       {transactionStatus == "NO" ? (
         <Layout style={global.screen}>
           {!openCamera ? (
@@ -217,7 +243,7 @@ export default function InitiateTransaction() {
           ) : (
             <View style={global.screen}>
               <CameraView
-                onFacesDetected={handleFacesDetected}
+                // onFacesDetected={handleFacesDetected}
                 ref={cameraref}
                 style={{ flex: 1 }}
                 facing={facing}

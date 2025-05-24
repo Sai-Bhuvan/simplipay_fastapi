@@ -4,13 +4,17 @@ import { Image } from "react-native";
 import { Text } from "react-native";
 import { StyleSheet } from "react-native";
 import global from "../global";
-
+import { useVideoPlayer, VideoView } from 'expo-video';
 
 export default function TransactionSuccess({ transactionStatus, onPressDone }) {
-    
     // const [isLoading, setIsLoading] = useState(false);
-
+    const player = useVideoPlayer(require('../assets/gifs/Tick.mp4'), player => {
+      player.loop = true;
+      player.play();
+    });
     return(
+
+      
         <Layout style={{height: 650}}>
             {transactionStatus == 'YES' ? Processing() 
             : transactionStatus == 'SUCCESS' ? Success() : Failure()}
@@ -26,46 +30,39 @@ export default function TransactionSuccess({ transactionStatus, onPressDone }) {
   }
 
   function Success() {
-    return <Layout>
-      <Text style={styles.text}>
-        Transaction successful!
-      </Text>
+  return (
+    <Layout>
+      <Text style={global.headerText}>Transaction successful!</Text>
       <Layout style={styles.tick}>
-        <Image
-          style={styles.tick}
-          source={{
-            uri: 'https://img.freepik.com/premium-vector/green-check-mark-icon-symbol-logo-circle-tick-symbol-green-color-vector-illustration_685751-503.jpg?w=360',
-          }} />
+      <VideoView style={styles.video} player={player}/>
       </Layout>
       <Button
-            style={global.button}
-            appearance='outline'
-            onPress={onPressDone}
-        ><Text>Done</Text></Button>
-    </Layout>;
-  }
+        onPress={onPressDone}
+        style={[global.button, { marginBottom: 10,justifyContent: 'center',marginTop:300,
+        alignItems: 'center', }]}
+      >
+        <Text style={[global.touchableComp, { fontFamily: "Main" }]}>Done</Text>
+      </Button>
+    </Layout>
+  );
+}
 
-  function Failure() {
-    return (
-      <Layout>
-        <Text style={styles.text}>
-          Transaction Failure!
-        </Text>
-        <Layout style={styles.tick}>
-          <Image
-            style={styles.tick}
-            source={{
-              uri: 'https://static.vecteezy.com/system/resources/previews/004/988/429/original/red-wrong-mark-icon-free-free-vector.jpg',
-            }} />
-        </Layout>
-        <Button
-            style={global.button}
-            appearance='outline'
-            onPress={onPressDone}
-        ><Text>Done</Text></Button>
+function Failure() {
+  return (
+    <Layout>
+      <Text style={global.headerText}>Transaction Failed!</Text>
+      <Layout style={styles.tick}>
       </Layout>
-    );
-  }
+      <Button
+        onPress={onPressDone}
+        style={[global.button, { marginBottom: 10,justifyContent: 'center',
+        alignItems: 'center', }]}
+      >
+        <Text style={[global.touchableComp, { fontFamily: "Main" }]}>Done</Text>
+      </Button>
+    </Layout>
+  );
+}
 }
 
 const styles = StyleSheet.create({
@@ -75,10 +72,9 @@ const styles = StyleSheet.create({
       alignItems: 'center',
     },
     tick: {
-        alignItems:'center',
-        justifyContent:'center',
-        width: 250,
-        height: 250,
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     text: {
         color: "white",
@@ -87,5 +83,12 @@ const styles = StyleSheet.create({
         marginTop: 30,
         justifyContent: "center",
         marginLeft: 50
-    }
+    },
+    video: {
+      width: 250,
+      height: 250,
+      marginTop:300,
+      justifyContent:"center",
+      alignSelf:'center'
+    },
   });

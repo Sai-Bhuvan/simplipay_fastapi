@@ -42,7 +42,7 @@ async def sign_up(request: SignUpRequest):
     try:
         bcrypt_salt = bcrypt.gensalt(10)
         hashed_password = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt_salt)
-        request.image = request.image.split(",")[1]
+        request.image = request.image
         new_merchant = {
             "name": request.name,
             "email": request.email,
@@ -184,12 +184,11 @@ async def compare_face_file(
             raise HTTPException(status_code=400, detail="Face not detected in one or both images")
 
         distance = np.linalg.norm(face1_enc[0] - face2_enc[0])
-        status_code = 200 if distance < 0.6 else 201
-        message = "Face Matched" if distance < 0.6 else "Face Do not match"
+        status_code = 200 if distance < 0.4 else 201
+        message = "Face Matched" if distance < 0.4 else "Face Do not match"
 
         return {"message": message, "distance": distance, "statusCode": status_code}
 
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
-
 

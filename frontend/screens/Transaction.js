@@ -33,7 +33,7 @@ import {
     async function fetchTransactions() {
       const mobNo = await AsyncStorage.getItem("phone");
       var result = await fetch(
-        "http://192.168.212.102:8000/previous-transactions",
+        "http://192.168.56.102:8000/previous-transactions",
         {
           method: "POST",
           headers: {
@@ -137,9 +137,9 @@ import {
     };
   
     return (
-      <Layout style={[global.screen,]}>
+      <Layout style={[{marginTop:80}]}>
         {transactions.length > 0 ? (
-          <Layout>
+          <Layout >
             <Layout style={{ flexDirection: "row" }}>
               <Input
                 style={{ marginHorizontal: 10,marginBottom:10, width: "80%" }}
